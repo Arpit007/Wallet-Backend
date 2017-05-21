@@ -11,13 +11,13 @@ var http = require('http');
 //var https = require('https');
 var activeConnections = require('../routes/ActiveConnections');
 
-var options={
+/*var options={
     key: fs.readFileSync('Certificate/server_key.pem'),
     cert: fs.readFileSync('Certificate/server_cert.pem'),
     ca:[fs.readFileSync('Certificate/server_cert.pem')],
     requestCert: true,
     rejectUnauthorized: false
-};
+ };*/
 /**
  * Get port from environment and store in Express.
  */

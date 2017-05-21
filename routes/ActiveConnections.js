@@ -51,7 +51,7 @@ var userBalance = function (ID, callback) {
         Collection.findOne({ _id : ID }, { Balance : 1 }, function (err, result) {
             if (err) throw err;
             if (!result) {
-                var Document = { _id : ID, Balance : 0, Payments : [], TopUp : [] };
+                var Document = { _id : ID, Balance : 0, Paid : [], Received : [], TopUp : [] };
                 Collection.insertOne(Document, function (err, res) {
                     if (err) throw err;
                     console.log("1 record inserted");

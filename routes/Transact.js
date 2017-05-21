@@ -18,8 +18,8 @@ var Transact = {
         
         database.Apply(function (db, dbFunc) {
             var Collection = db.collection('Accounts');
-            
-            var updateUser = function (ID, Amount, Self, func) {
+    
+            var updateUser = function (ID, Amount, Self, Paid, func) {
                 var Query, Update;
                 Query = { _id : ID };
                 if (Self) {
@@ -29,10 +29,18 @@ var Transact = {
                     };
                 }
                 else {
-                    Update = {
-                        $set : { Balance : Amount },
-                        $addToSet : { Payments : { _id : Data.ID, Amount : Data.Amount } }
-                    };
+                    if (Paid) {
+                        Update = {
+                            $set : { Balance : Amount },
+                            $addToSet : { Paid : { _id : Vendor + TimeStamp, Amount : Data.Amount } }
+                        };
+                    }
+                    else {
+                        Update = {
+                            $set : { Balance : Amount },
+                            $addToSet : { Received : { _id : Customer + TimeStamp, Amount : Data.Amount } }
+                        };
+                    }
                 }
                 
                 Collection.update(Query, Update, function (err, res) {
@@ -46,7 +54,7 @@ var Transact = {
                 Collection.findOne({ _id : ID }, { Balance : 1 }, function (err, result) {
                     if (err) throw err;
                     if (!result) {
-                        var Document = { _id : ID, Balance : 0, Payments : [], TopUp : [] };
+                        var Document = { _id : ID, Balance : 0, Paid : [], Received : [], TopUp : [] };
                         Collection.insertOne(Document, function (err, res) {
                             if (err) throw err;
                             console.log("1 record inserted");
@@ -66,9 +74,9 @@ var Transact = {
                         { $match : { 'TopUp._id' : ID } } ];
                 else
                     Query = [
-                        { $project : { Payments : 1 } },
-                        { $unwind : '$Payments' },
-                        { $match : { 'Payments._id' : ID } } ];
+                        { $project : { Paid : 1 } },
+                        { $unwind : '$Paid' },
+                        { $match : { 'Paid._id' : ID } } ];
                 
                 Collection.aggregate(Query, function (err, res) {
                     if (err) throw err;
@@ -82,7 +90,7 @@ var Transact = {
                 newTransaction(TimeStamp, true, function () {
                     getAccount(Vendor, function (Account) {
                         var finalBalance = parseInt(Account.Balance) + parseInt(Data.Amount);
-                        updateUser(Vendor, finalBalance, true, function () {
+                        updateUser(Vendor, finalBalance, true, false, function () {
                             callback({
                                 ID : Data.ID,
                                 Amount : Data.Amount,
@@ -101,18 +109,18 @@ var Transact = {
                 });
             }
             else {
-                newTransaction(Data.ID, false, function () {
+                newTransaction(Vendor + TimeStamp, false, function () {
                     getAccount(Customer, function (Account) {
                         if (Account.Balance >= Data.Amount) {
                             var cstBalance = parseInt(Account.Balance) - parseInt(Data.Amount);
-                            updateUser(Customer, cstBalance, false, function () {
+                            updateUser(Customer, cstBalance, false, true, function () {
                                 getAccount(Vendor, function (Account) {
                                     var vndBalance = parseInt(Account.Balance) + parseInt(Data.Amount);
-                                    updateUser(Vendor, vndBalance, false, function () {
+                                    updateUser(Vendor, vndBalance, false, false, function () {
                                         callback({
                                             ID : Data.ID,
                                             Amount : Data.Amount,
-                                            Type : transactionResult.Success,
+                                            Type : transactionResult.Success
                                         }, transactionResult.Success);
                                         activeConnections.UpdateUser({
                                             ID : Vendor,
