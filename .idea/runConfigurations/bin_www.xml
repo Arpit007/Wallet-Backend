@@ -3,6 +3,7 @@
     <envs>
       <env name="DEBUG" value="Wallet-Backend:*" />
       <env name="MONGODB_URI" value="mongodb://Wallet:MyStarkWallet@localhost:27017/Wallet" />
+      <env name="Password" value="MyWorld" />
     </envs>
     <browser url="http://localhost:3000/" />
     <profiling v8-profiler-path="" />

@@ -6,7 +6,6 @@ var express = require('express');
 var router = express.Router();
 
 var Url;
-var Password = process.env.Password || 'LostWorld';
 
 router.all('/', function (req, res, next) {
     res.writeHead(200, { 'Content-Type' : 'text/plain' });
@@ -15,7 +14,8 @@ router.all('/', function (req, res, next) {
 
 
 router.post('/proxyRegister', function (req, res, next) {
-    if (req.body.Password === Password) {
+    var oldPassword = process.env.Password || 'LostWorld';
+    if (req.body.Password === oldPassword) {
         Url = req.body.Url;
         res.writeHead(200, { 'Content-Type' : 'text/plain' });
         res.end('Redirecting to ' + Url);
