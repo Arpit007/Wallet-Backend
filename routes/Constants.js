@@ -4,7 +4,7 @@
 
 var Constants={
     key : "MGUCAQACEQDvU7VJQZCOJiSi7RHt9A+r",
-    dbUrl : process.env.MONGODB_URI//"mongodb://localhost:27017/Wallet"
+    dbUrl : "mongodb://localhost:27017/Wallet"//process.env.MONGODB_URI//
 };
 
 module.exports=Constants;

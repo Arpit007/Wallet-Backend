@@ -9,6 +9,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var wallet = require('./routes/Wallet');
 var proxy = require('./routes/Proxy');
+var Natal = require('./routes/Natal');
 var app = express();
 
 // view engine setup
@@ -27,6 +28,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/transact',wallet);
 app.use('/northwind', proxy);
+app.use('/natal', Natal);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
