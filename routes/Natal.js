@@ -7,14 +7,35 @@ var fs = require('fs');
 var router = express.Router();
 var request = require('request-promise');
 
-var Path = './routes/Data1.txt';
+var Promise = require('bluebird');
+var mongoose = require('mongoose');
+
+mongoose.Promise = Promise;
+
+global.mDb = mongoose.connect(require('./Constants').dbUrl);
+
+global.createPromise = function () {
+    return new Promise(function (resolve, reject) {
+        resolve({});
+    });
+};
 
 var Url = "";
 
-fs.exists(Path, function (yes) {
-    if (yes)
-        Url = fs.readFileSync(Path);
+var Schema = mDb.Schema({
+    _id : { type : Number, required : true },
+    Url : { type : String }
 });
+
+var Data = mDb.model('Url', Schema);
+
+Data.findById(1)
+    .then(function (data) {
+        if (data) {
+            Url = data.Url;
+        }
+    });
+
 
 router.all('/', function (req, res, next) {
     res.writeHead(200, { 'Content-Type' : 'text/plain' });
@@ -26,19 +47,28 @@ router.post('/proxyRegister', function (req, res, next) {
     var oldPassword = process.env.Password || 'LostWorld';
     if (req.body.Password === oldPassword) {
         Url = req.body.Url;
-        fs.truncate(Path, 0, function () {
-            Url = Url.trim();
-            if (Url[ Url.length - 1 ] === '/')
-                Url = Url.substr(0, Url.length - 1);
-        
-            fs.writeFile(Path, Url, function (err) {
-                if (err) {
-                    return console.log("Error writing file: " + err);
+        Url = Url.trim();
+        if (Url[ Url.length - 1 ] === '/')
+            Url = Url.substr(0, Url.length - 1);
+    
+        Data.findById(1)
+            .then(function (data) {
+                if (!data) {
+                    data = new Data();
+                    data._id = 1;
                 }
-                res.writeHead(200, { 'Content-Type' : 'text/plain' });
-                res.end('Redirecting to ' + Url);
+                data.Url = Url;
+            
+                return data.save()
+                    .then(function () {
+                        res.writeHead(200, { 'Content-Type' : 'text/plain' });
+                        res.end('Redirecting to ' + Url);
+                    });
+            })
+            .catch(function (e) {
+                console.log(e);
+                res.end(e);
             });
-        });
     }
     else {
         res.writeHead(400, { 'Content-Type' : 'text/plain' });
