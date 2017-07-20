@@ -7,9 +7,9 @@ var fs = require('fs');
 var router = express.Router();
 var request = require('request-promise');
 
-var Path = './routes/Data.txt';
+var Path = './routes/Data1.txt';
 
-var Url = fs.readFileSync(Path);
+var Url = fs.readFileSync(Path) || "";
 
 router.all('/', function (req, res, next) {
     res.writeHead(200, { 'Content-Type' : 'text/plain' });
