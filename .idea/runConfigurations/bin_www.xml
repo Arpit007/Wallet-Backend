@@ -4,6 +4,7 @@
       <env name="DEBUG" value="Wallet-Backend:*" />
       <env name="MONGODB_URI" value="mongodb://Wallet:MyStarkWallet@localhost:27017/Wallet" />
       <env name="Password" value="MyWorld" />
+      <env name="NODE_ENV" value="production" />
     </envs>
     <browser url="http://localhost:3000/" />
     <EXTENSION ID="com.jetbrains.nodejs.remote.docker.NodeJSDockerRunConfigurationExtension">

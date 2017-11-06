@@ -2,17 +2,15 @@
  * Created by Home Laptop on 05-Jun-17.
  */
 
-var express = require('express');
-var fs = require('fs');
-var router = express.Router();
-var request = require('request-promise');
+const express = require('express');
+const fs = require('fs');
+const router = express.Router();
+const request = require('request-promise');
 
-var Promise = require('bluebird');
-var mongoose = require('mongoose');
+const Promise = require('bluebird');
+const mongoose = require('mongoose');
 
 mongoose.Promise = Promise;
-
-global.mDb = mongoose.connect(require('./Constants').dbUrl);
 
 global.createPromise = function () {
     return new Promise(function (resolve, reject) {
@@ -20,14 +18,14 @@ global.createPromise = function () {
     });
 };
 
-var Url = "";
+let Url = "";
 
-var Schema = mDb.Schema({
+const Schema = mongoose.Schema({
     _id : { type : Number, required : true },
     Url : { type : String }
 });
 
-var Data = mDb.model('Url', Schema);
+const Data = mongoose.model('Url', Schema);
 
 Data.findById(1)
     .then(function (data) {
@@ -44,7 +42,7 @@ router.all('/', function (req, res, next) {
 
 
 router.post('/proxyRegister', function (req, res, next) {
-    var oldPassword = process.env.Password || 'LostWorld';
+    const oldPassword = process.env.Password || 'LostWorld';
     if (req.body.Password === oldPassword) {
         Url = req.body.Url;
         Url = Url.trim();
@@ -58,7 +56,7 @@ router.post('/proxyRegister', function (req, res, next) {
                     data._id = 1;
                 }
                 data.Url = Url;
-            
+    
                 return data.save()
                     .then(function () {
                         res.writeHead(200, { 'Content-Type' : 'text/plain' });
@@ -93,8 +91,8 @@ router.all('/*', function (req, res, next) {
         res.end('Set Url First');
     }
     else {
-        var redirect = Url + req.url;
-        var Options = {
+        const redirect = Url + req.url;
+        const Options = {
             method : req.method,
             uri : redirect,
             body : req.body,

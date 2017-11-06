@@ -8,6 +8,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "body-parser": "~1.16.0",
+    "compression": "^1.7.1",
     "cookie-parser": "~1.4.3",
     "crypto": "~0.0.3",
     "debug": "~2.6.0",
@@ -15,6 +16,7 @@
     "fcm-push": "^1.1.2",
     "firebase-admin": "^5.0.0",
     "fs": "0.0.1-security",
+    "helmet": "^3.9.0",
     "jade": "~1.11.0",
     "mongodb": "~2.2.26",
     "mongoose": "^4.11.3",

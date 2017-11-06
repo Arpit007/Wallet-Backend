@@ -1,6 +1,7 @@
-/**
+/*
+ /!**
  * Created by Home Laptop on 19-May-17.
- */
+ *!/
 var database = require('./Database');
 var transactionResult = require('./TransactionResult');
 var activeConnections = require('./ActiveConnections');
@@ -151,5 +152,5 @@ var Transact = {
         });
     }
 };
-
-module.exports = Transact;
+ 
+ module.exports = Transact;*/
