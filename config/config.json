@@ -4,5 +4,9 @@
   "dbConfig": {
     "url": "mongodb://localhost:27017/Wallet"
   },
-  "key": "MGUCAQACEQDvU7VJQZCOJiSi7RHt9A+r"
+  "key": "MGUCAQACEQDvU7VJQZCOJiSi7RHt9A+r",
+  "twilio": {
+    "ssid": "My Account SSID",
+    "authToken": "My Auth Token"
+  }
 }
