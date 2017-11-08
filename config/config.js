@@ -14,3 +14,14 @@ require('./dbConnect')(config.dbConfig.url);
 
 global.config = config;
 module.exports = config;
+
+
+
+
+
+
+
+
+
+
+

@@ -11,14 +11,12 @@ module.exports = function (app) {
     
     io.on('connection', function (socket) {
         socket.on('verify', function (_ID) {
-            const Data = security.decrypt(_ID);
-            const ID = Data.substr(0, 10);
-            const Token = Data.substr(10);
+            const ID = security.decrypt(_ID);
             
             socket.UserID = ID;
-            Connections[ 'Con_' + ID ] = { socket : socket, Token : Token };
-            
-            global.model.userModel.getBalance(ID)
+            Connections[ 'Con_' + ID ] = socket;
+    
+            model.user.getBalance(ID)
                 .then((balance) => {
                     "use strict";
                     balance = balance || 0;
@@ -28,7 +26,7 @@ module.exports = function (app) {
         
         socket.on('enquiry', function (_ID) {
             const ID = security.decryptDefaultKey(_ID);
-            global.model.userModel.getBalance(ID)
+            model.user.getBalance(ID)
                 .then((balance) => {
                     "use strict";
                     balance = balance || 0;
@@ -45,7 +43,7 @@ module.exports = function (app) {
         "use strict";
         
         if (Connections[ 'Con_' + Data.Vendor ])
-            Connections[ 'Con_' + Data.Vendor ].socket.emit('Update', Reply);
+            Connections[ 'Con_' + Data.Vendor ].emit('Update', Reply);
         else if (!config.debugMode) {
             twilioClient.messages.create({
                 to : "+91" + Data.Vendor,
@@ -57,7 +55,7 @@ module.exports = function (app) {
         }
         if (Data.Customer !== "0000000000") {
             if (Connections[ 'Con_' + Data.Customer ])
-                Connections[ 'Con_' + Data.Customer ].socket.emit('Update', Reply);
+                Connections[ 'Con_' + Data.Customer ].emit('Update', Reply);
             else if (!config.debugMode) {
                 twilioClient.messages.create({
                     to : "+91" + Data.Customer,

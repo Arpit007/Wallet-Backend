@@ -5,8 +5,8 @@ const security = require('./security');
 
 function Parse(payload) {
     try {
-        //payload = JSON.parse(security.decrypt(payload));
-        payload = JSON.parse(payload);
+        payload = JSON.parse(security.decrypt(payload));
+        //payload = JSON.parse(payload);
         return {
             Customer : payload[ 'i' ].substr(10),
             Vendor : payload[ 'i' ].substr(0, 10),
@@ -24,13 +24,15 @@ function Stringify(Receive, Payload, status) {
     "use strict";
     const Data = {
         s : status,
+        a : Receive.Amount,
         i : Payload.Vendor + Payload.Customer,
         vb : Payload.VendorBalance,
         cb : Payload.CustomerBalance,
-        o : Receive.OTP
+        o : Receive.OTP,
+        t : new Date(Payload.TimeStamp).getTime()
     };
-    //return security.encrypt(JSON.stringify(Data));
-    return (JSON.stringify(Data));
+    return security.encrypt(JSON.stringify(Data));
+    //return (JSON.stringify(Data));
 }
 
 module.exports = {
@@ -49,6 +51,8 @@ module.exports = {
 /*
  * Reply Payload
  * s: Status
+ * a: Amount
+ * t: Timestamp
  * i: ID Customer + Vendor
  * vb: Vendor Balance
  * cb: Customer Balance

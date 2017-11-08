@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-    invalid : 401,
-    failed : 402,
-    success : 200
+    invalid : "Invalid",
+    failed : "Failed",
+    success : "Success"
 };

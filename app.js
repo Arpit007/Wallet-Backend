@@ -37,7 +37,7 @@ app.use(function(req, res, next) {
 
 app.use(function(err, req, res, next) {
     res.locals.message = req.originalUrl + '\n\n' + err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.locals.error = config.debugMode ? err : {};
 
   res.status(err.status || 500);
   res.render('error');
