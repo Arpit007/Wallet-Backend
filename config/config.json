@@ -7,6 +7,7 @@
   "key": "MGUCAQACEQDvU7VJQZCOJiSi7RHt9A+r",
   "twilio": {
     "ssid": "My Account SSID",
-    "authToken": "My Auth Token"
+    "authToken": "My Auth Token",
+    "number": "My Twilio Number"
   }
 }

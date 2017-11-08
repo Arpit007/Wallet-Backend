@@ -12,11 +12,5 @@ else config.debugMode = true;
 
 require('./dbConnect')(config.dbConfig.url);
 
-config.model = {
-    user : require('../model/userController'),
-    transaction : require('../model/transactionController')
-};
-
-global.model = config.model;
 global.config = config;
 module.exports = config;

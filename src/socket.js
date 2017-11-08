@@ -1,8 +1,9 @@
 /**
  * Created by Home Laptop on 06-Nov-17.
  */
+const model = require('../model/models');
 const security = require('./security');
-const twilio = require('twilio');
+const twilioClient = require('twilio')(config.twilio.ssid, config.twilio.authToken);
 const Connections = {};
 
 module.exports = function (app) {
@@ -40,26 +41,32 @@ module.exports = function (app) {
         });
     });
     
-    function UpdateUser(Data) {
+    global.UpdateUser = (Data, Reply) => {
         "use strict";
-        let VendorObject = null, CustomerObject = null;
-        if (Data.vendor === "0000000000")
-            VendorObject = { Message : 'Top Up of Rs ' + Data.Amount + ' successful.', Balance : Data.VendorBalance };
+        
+        if (Connections[ 'Con_' + Data.Vendor ])
+            Connections[ 'Con_' + Data.Vendor ].socket.emit('Update', Reply);
         else {
-            VendorObject = {
-                Message : 'Payment of Rs ' + Data.Amount + ' successfully received from ' + Data.Customer,
-                Balance : Data.VendorBalance
-            };
-            CustomerObject = {
-                Message : 'Payment of Rs ' + Data.Amount + ' successfully made to ' + Data.Vendor,
-                Balance : Data.CustomerBalance
-            };
+            twilioClient.messages.create({
+                to : "+91" + Data.Vendor,
+                from : config.twilio.number,
+                body : Reply,
+            }, function (err, message) {
+                console.log(message.sid);
+            });
         }
-        if (Connections[ 'Con_' + Data.VendorId ])
-            Connections[ 'Con_' + Data.VendorId ].socket.emit('Update', security.encryptDefaultKey(JSON.stringify(VendorObject)));
-        if (Connections[ 'Con_' + Data.CustomerId ])
-            Connections[ 'Con_' + Data.CustomerId ].socket.emit('Update', security.encryptDefaultKey(JSON.stringify(CustomerObject)));
-    }
-    
-    return { UpdateUser : UpdateUser };
+        if (Data.Customer !== "0000000000") {
+            if (Connections[ 'Con_' + Data.Customer ])
+                Connections[ 'Con_' + Data.Customer ].socket.emit('Update', Reply);
+            else {
+                twilioClient.messages.create({
+                    to : "+91" + Data.Customer,
+                    from : config.twilio.number,
+                    body : Reply,
+                }, function (err, message) {
+                    console.log(message.sid);
+                });
+            }
+        }
+    };
 };

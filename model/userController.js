@@ -19,6 +19,11 @@ userModel.createUser = (name, number) => {
 userModel.getUser = (id) => {
     return userModel
         .findById(id)
+        .then((user) => {
+            "use strict";
+            if (!user)
+                return userModel.createUser("", id);
+        })
         .catch((e) => {
             "use strict";
             console.log(e);
