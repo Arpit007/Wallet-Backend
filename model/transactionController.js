@@ -31,22 +31,18 @@ transactionModel.getTransaction = (id) => {
 
 transactionModel.transact = (data) => {
     "use strict";
-    const Customer = Data.ID.substr(0, 10);
-    const Vendor = Data.ID.substr(10);
-    const Amount = parseInt(data.Amount);
-    
-    if (Customer === "0000000000") {
-        return transactionModel.createTransaction(Vendor, Customer, Amount)
-            .then((transaction) => {
-                return userModel.getUser(Vendor)
-                    .then((user) => {
-                        user.balance += Amount;
+    if (data.Customer === "0000000000") {
+        return userModel.getUser(data.Vendor)
+            .then((user) => {
+                return transactionModel.createTransaction(user._id, null, data.Amount)
+                    .then((transaction) => {
+                        user.balance += data.Amount;
                         user.credit.push(transaction._id);
                         return user.save()
                             .then(() => {
                                 return {
-                                    Customer : Customer,
-                                    Vendor : Vendor,
+                                    Customer : data.Customer,
+                                    Vendor : data.Vendor,
                                     CustomerBalance : 0,
                                     VendorBalance : user.balance,
                                     TimeStamp : transaction.date
@@ -57,31 +53,33 @@ transactionModel.transact = (data) => {
             .catch((e) => {
                 console.log(e);
                 throw status.failed;
-            })
+            });
     }
     else {
-        return userModel.getUser(Customer)
+        return userModel.getUser(data.Customer)
             .then((customer) => {
                 if (customer.balance < data.Amount)
                     throw status.invalid;
-                return userModel.getUser(Vendor)
+                return userModel.getUser(data.Vendor)
                     .then((vendor) => {
-                        return transactionModel.createTransaction(Vendor, Customer, data.Amount)
+                        return transactionModel.createTransaction(vendor._id, customer._id, data.Amount)
                             .then((transaction) => {
                                 vendor.balance += data.Amount;
                                 customer.balance -= data.Amount;
                                 vendor.credit.push(transaction._id);
                                 customer.debit.push(transaction._id);
                                 return customer.save()
-                                    .then(vendor.save)
                                     .then(() => {
-                                        return {
-                                            Customer : Customer,
-                                            Vendor : Vendor,
-                                            CustomerBalance : customer.balance,
-                                            VendorBalance : vendor.balance,
-                                            TimeStamp : transaction.date
-                                        };
+                                        return vendor.save()
+                                            .then(() => {
+                                                return {
+                                                    Customer : data.Customer,
+                                                    Vendor : data.Vendor,
+                                                    CustomerBalance : customer.balance,
+                                                    VendorBalance : vendor.balance,
+                                                    TimeStamp : transaction.date
+                                                };
+                                            });
                                     });
                             });
                     })

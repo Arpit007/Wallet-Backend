@@ -16,13 +16,14 @@ userModel.createUser = (name, number) => {
         });
 };
 
-userModel.getUser = (id) => {
+userModel.getUser = (number) => {
     return userModel
-        .findById(id)
+        .findOne({ number : number })
         .then((user) => {
             "use strict";
             if (!user)
-                return userModel.createUser("", id);
+                return userModel.createUser("", number);
+            return user;
         })
         .catch((e) => {
             "use strict";
@@ -34,7 +35,7 @@ userModel.getUser = (id) => {
 userModel.getBalance = (number) => {
     "use strict";
     return userModel
-        .findOne({ number : number }, { balance : 1 })
+        .getUser(number)
         .then((model) => {
             return model.balance;
         })

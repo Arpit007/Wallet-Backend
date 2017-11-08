@@ -9,11 +9,13 @@ const router = express.Router();
 
 router.post('/', function (req, res) {
     const Data = Payload.Parse(req.body.Data);
-    model.transaction.transact(Data, function (finalData, Code) {
-        const Reply = Payload.Stringify(Data, finalData, Code);
-        res.end(Reply);
-        UpdateUser(finalData, Reply);
-    })
+    model.transaction.transact(Data)
+        .then((finalData) => {
+            "use strict";
+            const Reply = Payload.Stringify(Data, finalData, model.status.success);
+            res.end(Reply);
+            UpdateUser(finalData, Reply);
+        })
         .catch((e) => {
             "use strict";
             const Reply = Payload.Stringify(Data, {}, e);
@@ -24,11 +26,12 @@ router.post('/', function (req, res) {
 
 router.post('/sms', function (req, res) {
     const Data = parsePayload(req.body.Data);
-    model.transact.transact(Data, function (finalData, Code) {
-        "use strict";
-        const Reply = Payload.Stringify(Data, finalData, Code);
-        UpdateUser(finalData, Reply);
-    })
+    model.transaction.transact(Data)
+        .then((finalData) => {
+            "use strict";
+            const Reply = Payload.Stringify(Data, finalData, model.status.success);
+            UpdateUser(finalData, Reply);
+        })
         .catch((e) => {
             "use strict";
             const Reply = Payload.Stringify(Data, {}, e);

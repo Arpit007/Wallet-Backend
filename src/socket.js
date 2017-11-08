@@ -46,7 +46,7 @@ module.exports = function (app) {
         
         if (Connections[ 'Con_' + Data.Vendor ])
             Connections[ 'Con_' + Data.Vendor ].socket.emit('Update', Reply);
-        else {
+        else if (!config.debugMode) {
             twilioClient.messages.create({
                 to : "+91" + Data.Vendor,
                 from : config.twilio.number,
@@ -58,7 +58,7 @@ module.exports = function (app) {
         if (Data.Customer !== "0000000000") {
             if (Connections[ 'Con_' + Data.Customer ])
                 Connections[ 'Con_' + Data.Customer ].socket.emit('Update', Reply);
-            else {
+            else if (!config.debugMode) {
                 twilioClient.messages.create({
                     to : "+91" + Data.Customer,
                     from : config.twilio.number,
