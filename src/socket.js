@@ -12,6 +12,7 @@ module.exports = function (app) {
     io.on('connection', function (socket) {
         socket.on('verify', function (_ID) {
             const ID = security.decrypt(_ID);
+            console.log('Connected: ' + ID);
             
             socket.UserID = ID;
             Connections[ 'Con_' + ID ] = socket;
@@ -35,6 +36,7 @@ module.exports = function (app) {
         });
         
         socket.on('disconnect', function () {
+            console.log('Disconnected: ' + socket.UserID);
             delete Connections[ 'Con_' + socket.UserID ];
         });
     });
